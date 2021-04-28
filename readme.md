@@ -25,6 +25,7 @@ dos desafios do CTF Zup 2021
 4. [Trivia](#log-access)
     - [Baby steps (Start here)](#log-access)
     - [Flag enters the chat](#rotate)
+    - [Webmasters like to keep things private](#rotate)
     - [Feedback time](#rotate)
 5. [Forense](#pwn1)
     - [My repo is broken](#pwn1)
@@ -159,7 +160,7 @@ aws s3 presign s3://noonekonws-ctf/aaaaaaaaaaaa.txt
 ```
 Pois esse recurso nos gera uma nova url válida, que ao ser acessada retorna então nossa flag ;)
 
-![Mistake](/cloud/no-one-knows/003.png)
+![Mistake](/cloud/no-one-knows/002.png)
 
 
 ## Reverse :key: ##
@@ -169,7 +170,7 @@ Pois esse recurso nos gera uma nova url válida, que ao ser acessada retorna ent
 Esse desafio nos apresenta uma página html que executa um alert solicitando uma senha.
 Ao digitar qualquer coisa é exibido um dialog com o dizer 'WRONG PASSWORD'
 
-![Mistake](/web/obfuscation/001.png)
+![Mistake](/reverse/obfuscation/001.png)
 
 Ao analisar a página percebo que se trata apenas de html e javascript, e que toda a lógica para obter a flag estaria no próprio front.
 O javascript contém menções para a função fromCharCode e também a string em hex abaixo
@@ -192,25 +193,25 @@ O que nos retorna a flag ZUP-{easy_flag_4_once_in_a_while}
 A url desse desafio é http://54.232.129.62/e1d9018d-a3a3-4c00-af1b-427e446a5b6c/ e...
 OK, esse desafio também parece ser apenas do tipo client-side, até mesmo pelo seu título. Porém o seu código é bem difícil de entender!
 
-![Mistake](/reverse/sec-frontend/001.png)
+![Mistake](/reverse/frontend-sec/001.png)
 
 Ok, se não podemos entendê-lo então vamos debugá-lo. Mas ao tentar fazer isso tenho uma surpresa, ficamos em loop por breakpoints em funções anônimas
 
-![Mistake](/reverse/sec-frontend/002.png)
+![Mistake](/reverse/frontend-sec/002.png)
 
 Resolvo então fazer download do código e processá-lo em um javascript beautifier (codebeautify.org/jsviewer), para pelo menos ter um código identado.
 Salvo o arquivo novo, agora um pouquinho melhor de acompanhar.
 
-![Mistake](/reverse/sec-frontend/003.png)
+![Mistake](/reverse/frontend-sec/003.png)
 
 Vejo que há pelo código trechos com a palavra 'debugger' ou ainda lugares que contém apenas um trecho dessa string como 'debu', e penso que eles são os vilões por trás do meu loop. Apenas troco para algo como 'debugx' ou ainda 'debub' e executo novamente. Boa! Sem mais problemas com o loop infinito em debug.
 Acompanho então o código, e vou adicionando logs ao longo dele para auxiliar no processo de entender o funcionamento. Vejo um if curioso e resolvo alterá-lo.
 
-![Mistake](/reverse/sec-frontend/004.png)
+![Mistake](/reverse/frontend-sec/004.png)
 
 Ao atualizar a página vejo a flag no console XD
 
-ZUP-{n0_f1n4l_3_53mpr3_um4_p3551m4_1d314}
+`ZUP-{n0_f1n4l_3_53mpr3_um4_p3551m4_1d314}`
 
 
 ## Web Security :computer: ##
@@ -560,6 +561,20 @@ Existe nesse desafio uma descrição que diz que a flag foi escondida na própri
 ```
 
 Que após decodificado (base64) retorna o texto ZUP-{v1d4_l0k4_74mb3m_4m4} 
+
+### Webmasters like to keep things private ### 
+
+Esse desafio se trata de um servidor 'escondido'. E nos dá duas dicas sobre, um IP em hex `0x36e8813e` e um domínio nada convencional `pepino.brocolis`
+Bastou então converter o ip hex em decimal (google hex ip to decimal) para obtermos o endereço 54.232.129.62
+Bastou então acessar o ip passando o header host : pepino.brocolis
+
+```shell
+curl 54.232.129.62 -H "Host: pepino.brocolis"
+
+```
+Para obter nossa flag 
+
+`Flag: ZUP-{h16h_w4y_7h3_h3ll_05_n0t}`
 
 
 ### Feedback time ###
