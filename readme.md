@@ -5,42 +5,42 @@ Este documento contém todas as minhas respostas (passo a passo) e ferramentas u
 dos desafios do CTF Zup 2021
 
 ### Categorias
-1. [Cloud Security](#debug-me)
-    - [Can you find information about the instance?](#debug-me)
-    - [Make the server give you the flag!](#debug-me)
-    - [I made a mistake!](#debug-me)
-    - [No One Knows](#debug-me)
-2. [Reverse](#not-a-caesar-algorithm)
-    - [Incredible Obfuscation](#not-a-caesar-algorithm)
-    - [Secret in the front-end is OK!](#not-a-caesar-algorithm)
-3. [Web Security](#pdf-crypt)
-    - [Simple Eval](#pdf-crypt)
-    - [My New Browser](#lost-pendrive)
-    - [09/24/2014](#unk)
-    - [Internal Problems](#unk)
-    - [Jail Want Tonic](#unk)
-    - [Wrong page!](#unk)
-    - [Damn bro, I like pizza!](#unk)
-    - [The Final Countdown](#unk)
-4. [Trivia](#log-access)
-    - [Baby steps (Start here)](#log-access)
-    - [Flag enters the chat](#rotate)
-    - [Webmasters like to keep things private](#rotate)
-    - [Feedback time](#rotate)
-5. [Forense](#pwn1)
-    - [My repo is broken](#pwn1)
-7. [Ferramentas](#android-studio)
+1. [Cloud Security](#can-you-find-information-about-the-instance)
+    - [Can you find information about the instance?](#can-you-find-information-about-the-instance)
+    - [Make the server give you the flag!](#make-the-server-give-you-the-flag)
+    - [I made a mistake!](#i-made-a-mistake)
+    - [No One Knows](#no-one-knows)
+2. [Reverse](#incredible-obfuscation)
+    - [Incredible Obfuscation](#incredible-obfuscation)
+    - [Secret in the front-end is OK!](#secret-in-the-front-end-is-ok)
+3. [Web Security](#simple-eval)
+    - [Simple Eval](#simple-eval)
+    - [My New Browser](#my-new-browser)
+    - [09/24/2014](#09/24/2014)
+    - [Internal Problems](#internal-problems)
+    - [Jail Want Tonic](#jail-want-tonic)
+    - [Wrong page!](#wrong-page)
+    - [Damn bro, I like pizza!](#dam-bro-i-like-pizza)
+    - [The Final Countdown](#the-final-countdown)
+4. [Trivia](#baby-steps-start-here)
+    - [Baby steps (Start here)](#baby-steps-start-here)
+    - [Flag enters the chat](#flag-enters-the-chat)
+    - [Webmasters like to keep things private](#webmasters-like-to-keep-things-private)
+    - [Feedback time](#feedback-time)
+5. [Forense](#my-repo-is-broken)
+    - [My repo is broken](#my-repo-is-broken)
+7. [Ferramentas](#aws-cli)
 
 ## Cloud Security :cloud: ##
 
 ### Can you find information about the instance? ###
 
-Esse desafio nos dá uma página web hospedada em um servidor AWS, com um formulário simples que tem como action um arquivo de nome code.php e um query string de nome 'url'.
+Esse desafio nos dá uma página web hospedada em um servidor AWS, com um formulário simples que tem como action um arquivo de nome `code.php` e um query string de nome `url`.
 
 ![About Instance](/cloud/about-instance/001.png)
 
-Qualquer coisa enviada nesse query string retorna uma resposta 200 com cabeçalho de content-type image/png.
-Tento então enviar o próprio nome da página como parâmetro (code.php) e uma "imagem" me é retornada.
+Qualquer coisa enviada nesse query string retorna uma resposta 200 com cabeçalho de content-type `image/png`.
+Tento então enviar o próprio nome da página como parâmetro `(code.php)` e uma "imagem" me é retornada.
 Essa imagem é na verdade o código fonte da página, e com ele fica mais fácil entender o que podemos fazer aqui.
 
 
@@ -76,8 +76,11 @@ http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-creden
 
 E isso me retorna credenciais válidas para autenticação através do aws cli. Após isso basta utilizá-las para executar os comandos 
 
+```shell
 aws s3api list-buckets
 aws s3 cp s3://flag-ctf/flag.txt ./
+cat flag.txt
+```
 
 ![About Instance](/cloud/about-instance/002.png)
 
@@ -146,7 +149,7 @@ Que fazem, respectivamente, listar as funções lambdas disponíveis e executar 
 Este desafio nos dá uma página com apenas uma imagem e um trecho de música escondido em um comentário html XD.
 Existe ainda na página um comentário citando um repo git. Ao acessar o repo é possível ver no histórico um commit mencionando um arquivo txt e credenciais AWS para acesso ao tal arquivo.
 
-![Mistake](/cloud/no-one-knows/001.png)
+![Who knows](/cloud/no-one-knows/001.png)
 
 Tento então acessar o arquivo pela url 
 
@@ -160,7 +163,7 @@ aws s3 presign s3://noonekonws-ctf/aaaaaaaaaaaa.txt
 ```
 Pois esse recurso nos gera uma nova url válida, que ao ser acessada retorna então nossa flag ;)
 
-![Mistake](/cloud/no-one-knows/002.png)
+![Who knows](/cloud/no-one-knows/002.png)
 
 
 ## Reverse :key: ##
@@ -170,7 +173,7 @@ Pois esse recurso nos gera uma nova url válida, que ao ser acessada retorna ent
 Esse desafio nos apresenta uma página html que executa um alert solicitando uma senha.
 Ao digitar qualquer coisa é exibido um dialog com o dizer 'WRONG PASSWORD'
 
-![Mistake](/reverse/obfuscation/001.png)
+![Obfuscation](/reverse/obfuscation/001.png)
 
 Ao analisar a página percebo que se trata apenas de html e javascript, e que toda a lógica para obter a flag estaria no próprio front.
 O javascript contém menções para a função fromCharCode e também a string em hex abaixo
@@ -193,21 +196,21 @@ O que nos retorna a flag ZUP-{easy_flag_4_once_in_a_while}
 A url desse desafio é http://54.232.129.62/e1d9018d-a3a3-4c00-af1b-427e446a5b6c/ e...
 OK, esse desafio também parece ser apenas do tipo client-side, até mesmo pelo seu título. Porém o seu código é bem difícil de entender!
 
-![Mistake](/reverse/frontend-sec/001.png)
+![Frontend is safe](/reverse/frontend-sec/001.png)
 
 Ok, se não podemos entendê-lo então vamos debugá-lo. Mas ao tentar fazer isso tenho uma surpresa, ficamos em loop por breakpoints em funções anônimas
 
-![Mistake](/reverse/frontend-sec/002.png)
+![Frontend is safe](/reverse/frontend-sec/002.png)
 
 Resolvo então fazer download do código e processá-lo em um javascript beautifier (codebeautify.org/jsviewer), para pelo menos ter um código identado.
 Salvo o arquivo novo, agora um pouquinho melhor de acompanhar.
 
-![Mistake](/reverse/frontend-sec/003.png)
+![Frontend is safe](/reverse/frontend-sec/003.png)
 
-Vejo que há pelo código trechos com a palavra 'debugger' ou ainda lugares que contém apenas um trecho dessa string como 'debu', e penso que eles são os vilões por trás do meu loop. Apenas troco para algo como 'debugx' ou ainda 'debub' e executo novamente. Boa! Sem mais problemas com o loop infinito em debug.
+Vejo que há pelo código trechos com a palavra `debugger` ou ainda lugares que contém apenas um trecho dessa string como `debu`, e penso que eles são os vilões por trás do meu loop. Apenas troco para algo como `debugx` ou ainda `debub` e executo novamente. Boa! Sem mais problemas com o loop infinito em debug.
 Acompanho então o código, e vou adicionando logs ao longo dele para auxiliar no processo de entender o funcionamento. Vejo um if curioso e resolvo alterá-lo.
 
-![Mistake](/reverse/frontend-sec/004.png)
+![Frontend is safe](/reverse/frontend-sec/004.png)
 
 Ao atualizar a página vejo a flag no console XD
 
@@ -251,22 +254,22 @@ Esse desafio nos da um endereço http://18.231.79.49:10080/ que retorna o texto 
 This site best viewed in [Zup-Web-Browser] the best browser in the world!
 ```
 
-HM...envio o request novamente, porém agora com o header User-Agent: Zup-Web-Browser
+HM...envio o request novamente, porém agora com o header `User-Agent: Zup-Web-Browser`
 E ele me retorna uma mensagem um tanto engraçada kkk
 
 ```html
 Get out of here, Hacker!! This page can only be accessed from the local client!
 ```
 
-Refaço a requisição pela terceira vez, mas agora adicionando o header X-Forwarded-For com o valor 127.0.0.1 
+Refaço a requisição pela terceira vez, mas agora adicionando o header `X-Forwarded-For` com o valor `127.0.0.1` 
 e por fim ele me retorna a flag ZUP-{klapaucius}
 
 
 ### 09/24/2014 ###
 
 Ok, esse desafio nos da o endereço http://challenges.ctfd.io:30114/ e uma data. Uma data. Imagino que seja a data de uma falha importante e procuro por
-isso no google: 'CVE 2014-09-24' e descubro uma falha conhecida como shellshock, uma baita falha no bash em servidores linux/mac.
-Essa vulnerabilidade permite execução de código bash de forma remota, enviando esse código em um header como o User-Agent, por exemplo.
+isso no google: `CVE 2014-09-24`. Descubro uma falha conhecida como `shellshock`, uma baita falha no bash em servidores linux/mac.
+Essa vulnerabilidade permite execução de código bash de forma remota, enviando esse código em um header como o `User-Agent`, por exemplo.
 Duas requisições com o header User-Agent atribuído às linhas abaixo bastam para encontrar e ler a flag
 
 ```bash
@@ -301,10 +304,10 @@ if (
 }
 ```
 
-Num primeiro momento, aparentemente somente a string 'aabC9RqS' deveria ser enviada para que o md5 gerasse o mesmo hash e a condição do if fosse alcançada,
+Num primeiro momento, aparentemente somente a string `aabC9RqS` deveria ser enviada para que o md5 gerasse o mesmo hash e a condição do if fosse alcançada,
 porém o mesmo if trata de não nos permitir enviar essa string.
-Sabendo da existência de colisões no algoritmo de hash md5, procuro no google pelo termo utilizado no if 'aabC9RqS' a fim de verificar se já existe algum outro valor conhecido que colida com este e acabo encontrando seu par de colisão: 'aabg7XSs'. Basta então enviar esse segundo no request e a flag ZUP-{ju66l1n6_b3_my_6u1d3} nos é retornada :)
 
+Sabendo da existência de colisões no algoritmo de hash md5, procuro no google pelo termo utilizado no if `aabC9RqS` a fim de verificar se já existe algum outro valor conhecido que colida com este e acabo encontrando seu par de colisão: `aabg7XSs`. Basta então enviar esse segundo no request e a flag ZUP-{ju66l1n6_b3_my_6u1d3} nos é retornada :)
 
 
 ### Jail Want Tonic ###
@@ -316,7 +319,7 @@ Ao executar o dirseach na página encontro alguns diretórios interessantes, que
 dirsearch -u http://18.231.79.49/
 ```
 
-![Mistake](/web/jail-want-tonic/001.png)
+![Jail want Tonic](/web/jail-want-tonic/001.png)
 
 Descubro a existência dos diretórios /login e /admin e ao entrar no primeiro é exibida um formulário de login que aparenta aceitar qualquer usuário e senha e nos gera um JWT válido. Na mesma página de login há a indicação da secret JWT utilizada no backend (nos mostrando a importância de guardá-la bem e não reutilizá-la em sistemas e/ou ambientes distintos).
 
@@ -378,7 +381,7 @@ E para minha satisfação o JWT retornado contém o payload
 O campo admin é, na verdade, um booleano que indica se somos ou não admin, e para saber qual seria a string que significaria 'true' basta um request enviando 'true' como username, o que nos retorna 'gehr'. Mas se a flag admin é preenchida internamente e está como false, como consigo mudar isso?
 Com a secret do JWT nós podemos alterar o payload do JWT e manter sua assinatura ainda válida. Utilizo para isso a ferramenta jwt.io
 
-![Mistake](/web/jail-want-tonic/002.png)
+![Jail want Tonic](/web/jail-want-tonic/002.png)
 
 Boa, agora temos um jwt válido e indicando que somos admin! Testo a requisição novamente com esse novo token
 
@@ -404,7 +407,7 @@ curl -s -i 'http://18.231.79.49/login' \
 --data-raw 'username=MHC-{vqqdq vqxsn}&password=123' | grep 'x-access-token'
 ```
 
-![Mistake](/web/jail-want-tonic/003.png)
+![Jail want Tonic](/web/jail-want-tonic/003.png)
  
 E por fim temos nossa flag: ZUP-{iddqd idkfa}
 
@@ -414,7 +417,7 @@ Esse desafio nos dava uma página html de url http://54.232.129.62/61ec5ae1-cfbf
 com o dizer 'página errada'. Demorou um tempo para eu sacar e olhar no css, que a flag na verdade estava em um
 comentário dentro do css.
 
-![Mistake](/web/wrong-page/001.png)
+![Zupinhas Wrong Page](/web/wrong-page/001.png)
 
 A flag era ZUP-{__w3lc0me__}
 
@@ -524,15 +527,15 @@ Acesso a minha página http://challenges.ctfd.io:30119/zlanafazuploadporaqui.php
 
 Acesso então o meu terminal pessoal
 
-![Mistake](/web/the-final-countdown/001.png)
+![The fucking final countdown](/web/the-final-countdown/001.png)
 
 Após algumas explorações, descubro a localidade da flag
 
-![Mistake](/web/the-final-countdown/002.png)
+![The fucking final countdown](/web/the-final-countdown/002.png)
 
 Mas não consigo ler seu conteúdo, pois sua permissão é 640 e o seu dono é o usário `netsparker` enquanto eu estou rodando sob o `www-data` (apache).
 
-![Mistake](/web/the-final-countdown/003.png)
+![The fucking final countdown](/web/the-final-countdown/003.png)
 
 Após vários artigos de privesc lidos e nenhum sucesso e conseguir bypassar a permissão, tento autenticar o `netsparker` com a senha `netsparker`, e
 a vulnerabilidade estava na minha cara o tempo todo. A senha do netsparker era netsparker!
@@ -541,7 +544,7 @@ a vulnerabilidade estava na minha cara o tempo todo. A senha do netsparker era n
 echo 'netsparker' | su netsparker -c 'cat ../../../../../flag/secos/e/molhados/flag.txt'
 ```
 
-![Mistake](/web/the-final-countdown/004.png)
+![The fucking final countdown](/web/the-final-countdown/004.png)
 
 E a nossa valiosa flag era ZUP-{mu51c4_p0pul4r_br451l31r4_4b0v3_4ll}
 
@@ -593,12 +596,10 @@ e buscar pela palavra chave ZUP, e após alguns testes e flags falsas é possív
 # Ferramentas :hammer: # 
 
 ### AWS Cli ###
-CLI da AWS disponível neste [link](https://www.google.com/) 
+CLI da AWS disponível neste [link](https://aws.amazon.com/pt/cli/) 
 ### dirsearch ###
-Ferramenta foo disponível [em](https://www.google.com/)
-### Notepad++ ###
-Editor de texto preferido de alguns devs, disponível [em](https://www.google.com/)
-### Postman ###
-Ferramenta para realizar requests Restful/automações de chamadas de API's disponível [em](https://www.google.com/)
+Ferramenta open-source de varredura por diretórios comuns disponível [em](https://github.com/maurosoria/dirsearch)
 ### Burp Suite Community Edition ###
-Ferramenta para busca de vulnerabilidades web disponível [em](https://www.google.com/)
+Ferramenta para busca de vulnerabilidades web disponível [em](https://portswigger.net/burp/communitydownload)
+### PHP Bash ###
+Sistema open-source em PHP que simula um terminal bash disponível [em](https://github.com/Arrexel/phpbash)
