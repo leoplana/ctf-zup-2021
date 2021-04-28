@@ -16,7 +16,7 @@ dos desafios do CTF Zup 2021
 3. [Web Security](#simple-eval)
     - [Simple Eval](#simple-eval)
     - [My New Browser](#my-new-browser)
-    - [09/24/2014](#09/24/2014)
+    - [09/24/2014](#09242014)
     - [Internal Problems](#internal-problems)
     - [Jail Want Tonic](#jail-want-tonic)
     - [Wrong page!](#wrong-page)
